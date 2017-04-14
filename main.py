@@ -19,6 +19,9 @@ class Dream11(object):
 
     def get_data(self):
         try:
+            total_data = list()
+            headers = ['Player Name', 'Role', 'Price', 'Match Date', 'Total Points',
+                       'Selected Percentage']
             self.driver = self.obj.get_driver_instance()
             self.driver.get(self.obj.get_xpath("Target_URL"))
             self.logger.info("Entering username")
@@ -34,12 +37,11 @@ class Dream11(object):
             self.logger.info("Getting team names")
             teams = self.obj.wait_for_elements(self.driver, self.obj.get_xpath("Team_names"))
             try:
-                file_name = self.obj.get_text_from_element(teams[0]) + 'VS' + \
+                file_name = self.obj.get_text_from_element(teams[0]) + 'vs' + \
                             self.obj.get_text_from_element(teams[1])
                 self.logger.info("Got file name as %s " % file_name)
             except IndexError:
                 raise Dream11Exception("Unable to get team names for file name")
-
             time.sleep(10)
             self.logger.info("Clicking on Create Team")
             self.obj.click_element(self.driver, self.obj.get_xpath("Create_team_btn"))
@@ -48,19 +50,18 @@ class Dream11(object):
             self.obj.click_element(self.driver, self.obj.get_xpath("Wk_tab_link"))
             total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                 "Total_wk"))
-            headers = ['Player Name', 'Role', 'Price', 'Match Date', 'Total Points',
-                       'Selected Percentage']
             for each_ele in total_elements:
                 self.logger.info("Clicking on info")
+                time.sleep(5)
                 self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                     "Info_link")).click()
-                self.logger.info("Getting Info of players")
+                self.logger.info("Getting Info of WKs")
                 player_name = self.obj.get_text_from_element(
-                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                         "Player_name_text")))
                 self.logger.info("Got player name %s " % player_name)
                 player_price = self.obj.get_text_from_element(
-                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                         "Player_price_text")))
                 player_dict = {
                     'Player Name': player_name,
@@ -87,8 +88,155 @@ class Dream11(object):
                     player_dict['Match Date'] = match_date
                     player_dict['Total Points'] = total_points
                     player_dict['Selected Percentage'] = selected_percentage
-                    self.logger.info("Saving to csv")
-                    save_to_csv(headers, file_name, player_dict)
+                    total_data.append(player_dict)
+
+                self.logger.info("Closing Player Info...")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+
+            self.logger.info("Clicking on BAT tab")
+            time.sleep(5)
+            self.obj.click_element(self.driver, self.obj.get_xpath("Bat_tab_link"))
+            total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                "Total_bat"))
+
+            for each_ele in total_elements:
+                self.logger.info("Clicking on info")
+                time.sleep(5)
+                self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                    "Info_link")).click()
+                self.logger.info("Getting Info of BATs")
+                player_name = self.obj.get_text_from_element(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                        "Player_name_text")))
+                self.logger.info("Got player name %s " % player_name)
+                player_price = self.obj.get_text_from_element(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                        "Player_price_text")))
+                player_dict = {
+                    'Player Name': player_name,
+                    'Price': player_price,
+                    'Role': 'BAT'
+                }
+                total_matches = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Total_matches"))
+                self.logger.info("Getting info of total matches")
+                for each_match in total_matches:
+                    match_date = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Match_date_text")))
+                    total_points = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Total_points_text")))
+                    selected_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Selected_percentage_text")))
+                    player_dict = deepcopy(player_dict)
+                    player_dict['Match Date'] = match_date
+                    player_dict['Total Points'] = total_points
+                    player_dict['Selected Percentage'] = selected_percentage
+                    total_data.append(player_dict)
+
+                self.logger.info("Closing Player Info...")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+
+            self.logger.info("Clicking on AR tab")
+            self.obj.click_element(self.driver, self.obj.get_xpath("Ar_tab_link"))
+            total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                "Total_ar"))
+            for each_ele in total_elements:
+                self.logger.info("Clicking on info")
+                time.sleep(5)
+                self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                    "Info_link")).click()
+                self.logger.info("Getting Info of ARs")
+                player_name = self.obj.get_text_from_element(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                        "Player_name_text")))
+                self.logger.info("Got player name %s " % player_name)
+                player_price = self.obj.get_text_from_element(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                        "Player_price_text")))
+                player_dict = {
+                    'Player Name': player_name,
+                    'Price': player_price,
+                    'Role': 'AR'
+                }
+                total_matches = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Total_matches"))
+                self.logger.info("Getting info of total matches")
+                for each_match in total_matches:
+                    match_date = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Match_date_text")))
+                    total_points = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Total_points_text")))
+                    selected_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Selected_percentage_text")))
+                    player_dict = deepcopy(player_dict)
+                    player_dict['Match Date'] = match_date
+                    player_dict['Total Points'] = total_points
+                    player_dict['Selected Percentage'] = selected_percentage
+                    total_data.append(player_dict)
+
+                self.logger.info("Closing Player Info...")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+
+            self.logger.info("Clicking on BOWL tab")
+            self.obj.click_element(self.driver, self.obj.get_xpath("Bowl_tab_link"))
+            total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                "Total_bowl"))
+            for each_ele in total_elements:
+                self.logger.info("Clicking on info")
+                time.sleep(5)
+                self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                    "Info_link")).click()
+                self.logger.info("Getting Info of BOWls")
+                player_name = self.obj.get_text_from_element(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                        "Player_name_text")))
+                self.logger.info("Got player name %s " % player_name)
+                player_price = self.obj.get_text_from_element(
+                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                        "Player_price_text")))
+                player_dict = {
+                    'Player Name': player_name,
+                    'Price': player_price,
+                    'Role': 'BOWL'
+                }
+                total_matches = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Total_matches"))
+                self.logger.info("Getting info of total matches")
+                for each_match in total_matches:
+                    match_date = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Match_date_text")))
+                    total_points = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Total_points_text")))
+                    selected_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_match,
+                                                                    self.obj.get_xpath(
+                                                                        "Selected_percentage_text")))
+                    player_dict = deepcopy(player_dict)
+                    player_dict['Match Date'] = match_date
+                    player_dict['Total Points'] = total_points
+                    player_dict['Selected Percentage'] = selected_percentage
+                    total_data.append(player_dict)
+
+                self.logger.info("Closing Player Info...")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+            self.logger.info("Saving to csv")
+            save_to_csv(headers, file_name, total_data)
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
