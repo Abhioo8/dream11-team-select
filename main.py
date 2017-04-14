@@ -1,13 +1,14 @@
+import operator
+import re
 import time
 import traceback
 from base64 import b64decode
 from collections import OrderedDict
 
-import operator
 from selenium.common.exceptions import WebDriverException
+
 from utils.config import Config
 from utils.get_logger import Logger
-import re
 
 
 class Dream11(object):
@@ -62,7 +63,8 @@ class Dream11(object):
             temp.reverse()
             temp = OrderedDict(temp)
             for key, value in enumerate(temp.iteritems()):
-                print("{0} : {1} - {2}".format(key+1, value[0], value[1]))
+                self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
+                self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
             # import ipdb;ipdb.set_trace()
             diff = set(self.espn_list) - set(result_dict.keys())
             print(diff)
@@ -79,13 +81,12 @@ class Dream11(object):
     def get_espn_data(self):
         try:
             self.logger.info("Opening espn news page...")
-            self.driver.get('http://www.espncricinfo.com/indian-premier-league-2017/content/story/1092006.html')
+            self.driver.get(self.obj.get_xpath("Preview_link"))
             team1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
                                                                                   self.obj.get_xpath("Team1")))
             team2 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
                                                                                   self.obj.get_xpath(
                                                                                       "Team2")))
-            # import ipdb;ipdb.set_trace()
             self.logger.info("Getting team names...")
             team_name1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
                                                                                   self.obj.get_xpath("Team1")+"/b"))
@@ -93,26 +94,63 @@ class Dream11(object):
                                                                                   self.obj.get_xpath(
                                                                                       "Team2") + "/b"))
             self.logger.info("Formatting the text...")
-            team1 = "".join("".join(team1.split(team_name1)).strip(":").strip().split(', '))
-            pt = re.compile('[\d+]')
-            res = re.sub(pt, ',', team1)
-            res = res.replace(',,', ',')
+            team1 = "".join(team1.split(team_name1)).strip(":").strip()
+            team2 = "".join(team2.split(team_name2)).strip(":").strip()
+
+            is_change_needed = False
+            if is_change_needed:
+                with open('/tmp/dream11.txt', 'w') as f:
+                    f.truncate()
+                with open('/tmp/dream11.txt', 'a') as f:
+                    f.write(team1 + '\n')
+                    f.write(team2 + '\n')
+                # Since we can't rely upon espn cricnfo, it might have text formatting
+                # issues, writing to a txt file, verify it, then continue
+                import ipdb;
+                ipdb.set_trace()
+                with open('/tmp/dream11.txt', 'r') as f:
+                    teams = f.readlines()
+                team1 = teams[0].strip("\n")
+                team2 = teams[1].strip("\n")
+            pt = re.compile(r'\d+\s+')
+            res = re.sub(pt, '', team1)
             self.logger.info("Adding team1 players to espn_list")
             for ele in res.split(', '):
                 if ele:
-                    self.espn_list.append(ele)
+                    if '(wk)' in ele:
+                        ele = "".join(ele.split('(wk)')).strip()
+                    elif '(capt)' in ele:
+                        ele = "".join(ele.split('(capt)')).strip()
+                    elif '/' in ele:
+                        for x in ele.split('/'):
+                            self.espn_list.append(x.strip())
+                        continue
+                    self.espn_list.append(ele.strip())
             self.logger.info("Team1 Players are %s" % self.espn_list)
+            self.logger.info("Total Team1 Players are %d" % len(self.espn_list))
+            self.file_logger.info("Team1 Players are %s" % self.espn_list)
+            self.file_logger.info("Total Team1 Players are %d" % len(self.espn_list))
             self.logger.info("Formatting the text...")
-            team2 = "".join("".join(team2.split(team_name2)).strip(":").strip().split(', '))
-            res = re.sub(pt, ',', team2)
-            res = res.replace(',,', ',')
+            res = re.sub(pt, '', team2)
             self.logger.info("Adding team2 players to espn_list")
             team2_players = []
             for ele in res.split(', '):
                 if ele:
-                    self.espn_list.append(ele)
+                    if '(wk)' in ele:
+                        ele = "".join(ele.split('(wk)')).strip()
+                    elif '(capt)' in ele:
+                        ele = "".join(ele.split('(capt)')).strip()
+                    elif '/' in ele:
+                        for x in ele.split('/'):
+                            self.espn_list.append(x.strip())
+                            team2_players.append(x.strip())
+                        continue
+                    self.espn_list.append(ele.strip())
                     team2_players.append(ele)
             self.logger.info("Team2 Players are %s" % team2_players)
+            self.logger.info("Total Team2 Players are %d" % len(team2_players))
+            self.file_logger.info("Team2 Players are %s" % team2_players)
+            self.file_logger.info("Total Team2 Players are %d" % len(team2_players))
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
