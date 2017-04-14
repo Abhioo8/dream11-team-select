@@ -1,13 +1,13 @@
 import time
 import traceback
 from base64 import b64decode
-from copy import deepcopy
+from collections import OrderedDict
 
+import operator
 from selenium.common.exceptions import WebDriverException
-
 from utils.config import Config
 from utils.get_logger import Logger
-from utils.utils import save_to_csv
+import re
 
 
 class Dream11(object):
@@ -16,10 +16,17 @@ class Dream11(object):
         self.obj = Config()
         self.logger = Logger.get_console_logger()
         self.file_logger = Logger.get_file_logger()
+        self.espn_list = list()
 
     def get_data(self):
         try:
-            self.driver = self.obj.get_driver_instance()
+            result_dict = dict()
+            self.logger.info("Initializing driver")
+            self.driver = self.obj.get_driver_instance("phantom")
+            self.logger.info("Initialized driver...")
+            # Get team data from espn
+            self.get_espn_data()
+            self.logger.info("Navigating to dream11 homepage...")
             self.driver.get(self.obj.get_xpath("Target_URL"))
             self.logger.info("Entering username")
             self.obj.send_keys(self.driver, self.obj.get_xpath("Username_input"),
@@ -30,65 +37,35 @@ class Dream11(object):
                 self.obj.get_xpath("Password")))
             self.logger.info("Clicking on login")
             self.obj.click_element(self.driver, self.obj.get_xpath("Login_btn"))
-            # Get teams
-            self.logger.info("Getting team names")
-            teams = self.obj.wait_for_elements(self.driver, self.obj.get_xpath("Team_names"))
-            try:
-                file_name = self.obj.get_text_from_element(teams[0]) + 'VS' + \
-                            self.obj.get_text_from_element(teams[1])
-                self.logger.info("Got file name as %s " % file_name)
-            except IndexError:
-                raise Dream11Exception("Unable to get team names for file name")
-
+            self.logger.info("Sleeping for 10 seconds")
             time.sleep(10)
-            self.logger.info("Clicking on Create Team")
-            self.obj.click_element(self.driver, self.obj.get_xpath("Create_team_btn"))
-            time.sleep(10)
-            self.logger.info("Clicking on WK tab")
-            self.obj.click_element(self.driver, self.obj.get_xpath("Wk_tab_link"))
-            total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
-                "Total_wk"))
-            headers = ['Player Name', 'Role', 'Price', 'Match Date', 'Total Points',
-                       'Selected Percentage']
-            for each_ele in total_elements:
-                self.logger.info("Clicking on info")
-                self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
-                    "Info_link")).click()
-                self.logger.info("Getting Info of players")
-                player_name = self.obj.get_text_from_element(
-                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
-                        "Player_name_text")))
-                self.logger.info("Got player name %s " % player_name)
-                player_price = self.obj.get_text_from_element(
-                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
-                        "Player_price_text")))
-                player_dict = {
-                    'Player Name': player_name,
-                    'Price': player_price,
-                    'Role': 'WK'
-                }
-                total_matches = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
-                    "Total_matches"))
-                self.logger.info("Getting info of total matches")
-                for each_match in total_matches:
-                    match_date = self.obj.get_text_from_element(
-                        self.obj.wait_for_element_inside_webelement(each_match,
-                                                                    self.obj.get_xpath(
-                                                                        "Match_date_text")))
-                    total_points = self.obj.get_text_from_element(
-                        self.obj.wait_for_element_inside_webelement(each_match,
-                                                                    self.obj.get_xpath(
-                                                                        "Total_points_text")))
-                    selected_percentage = self.obj.get_text_from_element(
-                        self.obj.wait_for_element_inside_webelement(each_match,
-                                                                    self.obj.get_xpath(
-                                                                        "Selected_percentage_text")))
-                    player_dict = deepcopy(player_dict)
-                    player_dict['Match Date'] = match_date
-                    player_dict['Total Points'] = total_points
-                    player_dict['Selected Percentage'] = selected_percentage
-                    self.logger.info("Saving to csv")
-                    save_to_csv(headers, file_name, player_dict)
+            # Get total teams
+            self.logger.info("Selecting match")
+            self.obj.click_element(self.driver, self.obj.get_xpath("Match_selector"))
+            time.sleep(5)
+            self.logger.info("Getting total teams")
+            total_teams = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                "Total_teams"))
+            for each_team in total_teams:
+                self.logger.info("Clicking on teams")
+                each_team.find_element_by_xpath('a').click()
+                time.sleep(5)
+                total_players = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Total_players"))
+                for each_player in total_players:
+                    player_name = each_player.get_attribute('title')
+                    if player_name not in result_dict:
+                        result_dict[player_name] = 1
+                    else:
+                        result_dict[player_name] += 1
+            temp = sorted(result_dict.items(), key=operator.itemgetter(1))
+            temp.reverse()
+            temp = OrderedDict(temp)
+            for key, value in enumerate(temp.iteritems()):
+                print("{0} : {1} - {2}".format(key+1, value[0], value[1]))
+            # import ipdb;ipdb.set_trace()
+            diff = set(self.espn_list) - set(result_dict.keys())
+            print(diff)
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
@@ -98,6 +75,48 @@ class Dream11(object):
                 self.driver.quit()
             else:
                 print("Driver not initialized")
+
+    def get_espn_data(self):
+        try:
+            self.logger.info("Opening espn news page...")
+            self.driver.get('http://www.espncricinfo.com/indian-premier-league-2017/content/story/1092006.html')
+            team1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
+                                                                                  self.obj.get_xpath("Team1")))
+            team2 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
+                                                                                  self.obj.get_xpath(
+                                                                                      "Team2")))
+            # import ipdb;ipdb.set_trace()
+            self.logger.info("Getting team names...")
+            team_name1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
+                                                                                  self.obj.get_xpath("Team1")+"/b"))
+            team_name2 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
+                                                                                  self.obj.get_xpath(
+                                                                                      "Team2") + "/b"))
+            self.logger.info("Formatting the text...")
+            team1 = "".join("".join(team1.split(team_name1)).strip(":").strip().split(', '))
+            pt = re.compile('[\d+]')
+            res = re.sub(pt, ',', team1)
+            res = res.replace(',,', ',')
+            self.logger.info("Adding team1 players to espn_list")
+            for ele in res.split(', '):
+                if ele:
+                    self.espn_list.append(ele)
+            self.logger.info("Team1 Players are %s" % self.espn_list)
+            self.logger.info("Formatting the text...")
+            team2 = "".join("".join(team2.split(team_name2)).strip(":").strip().split(', '))
+            res = re.sub(pt, ',', team2)
+            res = res.replace(',,', ',')
+            self.logger.info("Adding team2 players to espn_list")
+            team2_players = []
+            for ele in res.split(', '):
+                if ele:
+                    self.espn_list.append(ele)
+                    team2_players.append(ele)
+            self.logger.info("Team2 Players are %s" % team2_players)
+
+        except WebDriverException:
+            self.logger.info("Exception Occurred... writing to the log file")
+            self.file_logger.debug(traceback.format_exc())
 
 
 class Dream11Exception(Exception):
