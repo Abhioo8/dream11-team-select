@@ -4,9 +4,7 @@ import time
 import traceback
 from base64 import b64decode
 from collections import OrderedDict
-
 from selenium.common.exceptions import WebDriverException
-
 from utils.config import Config
 from utils.get_logger import Logger
 
@@ -21,6 +19,8 @@ class Dream11(object):
 
     def get_data(self):
         try:
+            self.file_logger.info(
+                "********************************************************************************")
             result_dict = dict()
             self.logger.info("Initializing driver")
             self.driver = self.obj.get_driver_instance("phantom")
@@ -67,7 +67,8 @@ class Dream11(object):
                 self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
             # import ipdb;ipdb.set_trace()
             diff = set(self.espn_list) - set(result_dict.keys())
-            print(diff)
+            self.logger.info("{}".format(diff))
+            self.file_logger.info("{}".format(diff))
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
@@ -126,10 +127,10 @@ class Dream11(object):
                             self.espn_list.append(x.strip())
                         continue
                     self.espn_list.append(ele.strip())
-            self.logger.info("Team1 Players are %s" % self.espn_list)
-            self.logger.info("Total Team1 Players are %d" % len(self.espn_list))
-            self.file_logger.info("Team1 Players are %s" % self.espn_list)
-            self.file_logger.info("Total Team1 Players are %d" % len(self.espn_list))
+            self.logger.info("%s Players are %s" % (team_name1, self.espn_list))
+            self.logger.info("Total %s Players are %d" % (team_name1, len(self.espn_list)))
+            self.file_logger.info("%s Players are %s" % (team_name1, self.espn_list))
+            self.file_logger.info("Total %s Players are %d" % (team_name1, len(self.espn_list)))
             self.logger.info("Formatting the text...")
             res = re.sub(pt, '', team2)
             self.logger.info("Adding team2 players to espn_list")
@@ -147,10 +148,10 @@ class Dream11(object):
                         continue
                     self.espn_list.append(ele.strip())
                     team2_players.append(ele)
-            self.logger.info("Team2 Players are %s" % team2_players)
-            self.logger.info("Total Team2 Players are %d" % len(team2_players))
-            self.file_logger.info("Team2 Players are %s" % team2_players)
-            self.file_logger.info("Total Team2 Players are %d" % len(team2_players))
+            self.logger.info("%s Players are %s" % (team_name2, team2_players))
+            self.logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
+            self.file_logger.info("%s Players are %s" % (team_name2, team2_players))
+            self.file_logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
