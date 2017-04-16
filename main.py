@@ -59,16 +59,20 @@ class Dream11(object):
                         result_dict[player_name] = 1
                     else:
                         result_dict[player_name] += 1
-            temp = sorted(result_dict.items(), key=operator.itemgetter(1))
-            temp.reverse()
+            # temp = sorted(result_dict.items(), key=operator.itemgetter(1))
+            temp = sorted(result_dict.items(), key=operator.itemgetter(0))
+            # temp.reverse()
             temp = OrderedDict(temp)
             for key, value in enumerate(temp.iteritems()):
                 self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
                 self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
             # import ipdb;ipdb.set_trace()
             diff = set(self.espn_list) - set(result_dict.keys())
-            self.logger.info("{}".format(diff))
-            self.file_logger.info("{}".format(diff))
+            self.logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
+            self.file_logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
+            diff = set(result_dict.keys()) - set(self.espn_list)
+            self.logger.info("Players in Dream11 not in ESPN List {}".format(diff))
+            self.file_logger.info("Players in Dream11 not in ESPN List {}".format(diff))
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
@@ -160,7 +164,7 @@ class Dream11(object):
 
 class Dream11Exception(Exception):
     """
-    Custom Exception Class    
+    Custom Exception Class
     """
 
     def __init__(self, message):
