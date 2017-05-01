@@ -17,7 +17,7 @@ class Dream11(object):
         self.file_logger = Logger.get_file_logger()
         self.espn_list = list()
 
-    def get_data(self):
+    def get_data(self, ipl=True):
         try:
             self.file_logger.info(
                 "********************************************************************************")
@@ -26,7 +26,8 @@ class Dream11(object):
             self.driver = self.obj.get_driver_instance("phantom")
             self.logger.info("Initialized driver...")
             # Get team data from espn
-            self.get_espn_data()
+            if ipl:
+                self.get_espn_data()
             self.logger.info("Navigating to dream11 homepage...")
             self.driver.get(self.obj.get_xpath("Target_URL"))
             self.logger.info("Entering username")
@@ -59,6 +60,9 @@ class Dream11(object):
                         result_dict[player_name] = 1
                     else:
                         result_dict[player_name] += 1
+            # Logout
+            self.obj.click_element(self.driver, self.obj.get_xpath("Team_section"))
+            self.obj.click_element(self.driver, self.obj.get_xpath("Logout_btn"))
             # temp = sorted(result_dict.items(), key=operator.itemgetter(1))
             temp = sorted(result_dict.items(), key=operator.itemgetter(0))
             # temp.reverse()
@@ -66,13 +70,14 @@ class Dream11(object):
             for key, value in enumerate(temp.iteritems()):
                 self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
                 self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
+            if ipl:
             # import ipdb;ipdb.set_trace()
-            diff = set(self.espn_list) - set(result_dict.keys())
-            self.logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
-            self.file_logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
-            diff = set(result_dict.keys()) - set(self.espn_list)
-            self.logger.info("Players in Dream11 not in ESPN List {}".format(diff))
-            self.file_logger.info("Players in Dream11 not in ESPN List {}".format(diff))
+                diff = set(self.espn_list) - set(result_dict.keys())
+                self.logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
+                self.file_logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
+                diff = set(result_dict.keys()) - set(self.espn_list)
+                self.logger.info("Players in Dream11 not in ESPN List {}".format(diff))
+                self.file_logger.info("Players in Dream11 not in ESPN List {}".format(diff))
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
@@ -177,4 +182,4 @@ class Dream11Exception(Exception):
 
 if __name__ == "__main__":
     obj = Dream11()
-    obj.get_data()
+    obj.get_data(ipl=True)
