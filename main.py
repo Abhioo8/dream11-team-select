@@ -112,7 +112,6 @@ class Dream11(object):
                         self.logger.info("{0} is a Vice-Captain and put {1} times ".format(each_vcap, x))
                         self.file_logger.info("{0} is a Vice-Captain and put {1} times ".format(each_vcap, x))
                 if ipl:
-                # import ipdb;ipdb.set_trace()
                     diff = set(self.espn_list) - set(result_dict.keys())
                     self.logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
                     self.file_logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
@@ -143,8 +142,8 @@ class Dream11(object):
             teams = database_obj.get_teams_from_db(link)
             if teams:
                 import json
-                self.espn_list.append(json.loads(teams[0][0]))
-                self.espn_list.append(json.loads(teams[0][1]))
+                self.espn_list.extend(json.loads(teams[0][0]))
+                self.espn_list.extend(json.loads(teams[0][1]))
                 return
             self.logger.info("Opening espn news page...")
             self.driver.get(link)
@@ -154,7 +153,6 @@ class Dream11(object):
                                                                                   self.obj.get_xpath(
                                                                                       "Team2")))
             self.logger.info("Getting team names...")
-            # import ipdb;ipdb.set_trace()
             team_name1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
                                                                                   self.obj.get_xpath("Team1")+"/b"))
             team_name2 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
@@ -223,7 +221,7 @@ class Dream11(object):
             self.logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
             self.file_logger.info("%s Players are %s" % (team_name2, team2_players))
             self.file_logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
-            insert_teams_into_db(team1_players, team2_players)
+            database_obj.insert_teams_into_db(link, team1_players, team2_players)
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
