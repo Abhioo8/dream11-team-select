@@ -7,6 +7,7 @@ from collections import OrderedDict
 from selenium.common.exceptions import WebDriverException
 from utils.config import Config
 from utils.get_logger import Logger
+from utils.config import NoSuchElementException
 
 
 class Dream11(object):
@@ -22,8 +23,10 @@ class Dream11(object):
             self.file_logger.info(
                 "********************************************************************************")
             result_dict = dict()
+            vcap = set()
+            cap = set()
             self.logger.info("Initializing driver")
-            self.driver = self.obj.get_driver_instance("phantom")
+            self.driver = self.obj.get_driver_instance("firefox")
             self.logger.info("Initialized driver...")
             # Get team data from espn
             if ipl:
@@ -39,45 +42,71 @@ class Dream11(object):
                 self.obj.get_xpath("Password")))
             self.logger.info("Clicking on login")
             self.obj.click_element(self.driver, self.obj.get_xpath("Login_btn"))
-            self.logger.info("Sleeping for 10 seconds")
-            time.sleep(10)
-            # Get total teams
-            self.logger.info("Selecting match")
-            self.obj.click_element(self.driver, self.obj.get_xpath("Match_selector"))
-            time.sleep(5)
-            self.logger.info("Getting total teams")
-            total_teams = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
-                "Total_teams"))
-            for each_team in total_teams:
-                self.logger.info("Clicking on teams")
-                each_team.find_element_by_xpath('a').click()
+            try:
+                self.logger.info("Sleeping for 10 seconds")
+                time.sleep(10)
+                # Get total teams
+                self.logger.info("Selecting match")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Match_selector"))
                 time.sleep(5)
-                total_players = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
-                    "Total_players"))
-                for each_player in total_players:
-                    player_name = each_player.get_attribute('title')
-                    if player_name not in result_dict:
-                        result_dict[player_name] = 1
-                    else:
-                        result_dict[player_name] += 1
-            # Logout
-            self.obj.click_element(self.driver, self.obj.get_xpath("Team_section"))
-            self.obj.click_element(self.driver, self.obj.get_xpath("Logout_btn"))
-            # temp = sorted(result_dict.items(), key=operator.itemgetter(1))
-            temp = sorted(result_dict.items(), key=operator.itemgetter(0))
-            # temp.reverse()
-            temp = OrderedDict(temp)
-            for key, value in enumerate(temp.iteritems()):
-                self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
-                self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
-            if ipl:
-            # import ipdb;ipdb.set_trace()
-                diff = set(self.espn_list) - set(result_dict.keys())
-                self.logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
-                self.file_logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
-                diff = set(result_dict.keys()) - set(self.espn_list)
-                self.logger.info("Players in Dream11 not in ESPN List {}".format(diff))
-                self.file_logger.info("Players in Dream11 not in ESPN List {}".format(diff))
+                self.logger.info("Getting total teams")
+                total_teams = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Total_teams"))
+                for each_team in total_teams:
+                    self.logger.info("Clicking on teams")
+                    self.obj.click_element(self.driver, self.obj.get_xpath("Team_select"))
+                    each_team.click()
+                    time.sleep(5)
+                    total_players = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                        "Total_players"))
+                    for each_player in total_players:
+                        player_name = each_player.get_attribute('title')
+                        try:
+                            each_player.find_element_by_xpath(".//span[@class='vCapIco']")
+                            vcap.add(player_name)
+                        except NoSuchElementException:
+                            pass
+                        try:
+                            each_player.find_element_by_xpath(".//span[@class='capIco']")
+                            cap.add(player_name)
+                        except NoSuchElementException:
+                            pass
+                        if player_name not in result_dict:
+                            result_dict[player_name] = 1
+                        else:
+                            result_dict[player_name] += 1
+               # temp = sorted(result_dict.items(), key=operator.itemgetter(1))
+                temp = sorted(result_dict.items(), key=operator.itemgetter(0))
+                # temp.reverse()
+                temp = OrderedDict(temp)
+                for key, value in enumerate(temp.iteritems()):
+                    self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
+                    self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
+                for each_cap in cap:
+                    x = result_dict[each_cap]
+                    if x > 1:
+                        self.logger.info("{0} is a Captain and put {1} times ".format(each_cap, x))
+                        self.file_logger.info("{0} is a Captain and put {1} times ".format(each_cap, x))
+                for each_vcap in vcap:
+                    x = result_dict[each_vcap]
+                    if x > 2:
+                        self.logger.info("{0} is a Captain and put {1} times ".format(each_vcap, x))
+                        self.file_logger.info("{0} is a Captain and put {1} times ".format(each_vcap, x))
+                if ipl:
+                # import ipdb;ipdb.set_trace()
+                    diff = set(self.espn_list) - set(result_dict.keys())
+                    self.logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
+                    self.file_logger.info("Players in ESPN List but not in Dream11 {}".format(diff))
+                    diff = set(result_dict.keys()) - set(self.espn_list)
+                    self.logger.info("Players in Dream11 not in ESPN List {}".format(diff))
+                    self.file_logger.info("Players in Dream11 not in ESPN List {}".format(diff))
+            except Exception:
+                self.logger.info("Exception Occurred... writing to the log file")
+                self.file_logger.debug(traceback.format_exc())
+            finally:
+                # Logout
+                self.obj.click_element(self.driver, self.obj.get_xpath("Team_section"))
+                self.obj.click_element(self.driver, self.obj.get_xpath("Logout_btn"))
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
@@ -135,6 +164,8 @@ class Dream11(object):
                         for x in ele.split('/'):
                             self.espn_list.append(x.strip())
                         continue
+                    elif 'probable' in ele:
+                        ele = ''.join(ele.split('(probable) '))
                     self.espn_list.append(ele.strip())
             self.logger.info("%s Players are %s" % (team_name1, self.espn_list))
             self.logger.info("Total %s Players are %d" % (team_name1, len(self.espn_list)))
@@ -155,6 +186,8 @@ class Dream11(object):
                             self.espn_list.append(x.strip())
                             team2_players.append(x.strip())
                         continue
+                    elif 'probable' in ele:
+                        ele = ''.join(ele.split('(probable) '))
                     self.espn_list.append(ele.strip())
                     team2_players.append(ele)
             self.logger.info("%s Players are %s" % (team_name2, team2_players))
