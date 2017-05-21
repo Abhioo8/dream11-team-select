@@ -8,6 +8,7 @@ from selenium.common.exceptions import WebDriverException
 from utils.config import Config
 from utils.get_logger import Logger
 from utils.config import NoSuchElementException
+from utils.config import StaleElementReferenceException
 
 
 class Dream11(object):
@@ -26,13 +27,25 @@ class Dream11(object):
             vcap = set()
             cap = set()
             self.logger.info("Initializing driver")
-            self.driver = self.obj.get_driver_instance("phantom")
+            driver_name = 'phantom'
+            self.driver = self.obj.get_driver_instance(driver_name)
             self.logger.info("Initialized driver...")
             # Get team data from espn
+            if driver_name == 'chrome':
+                try:
+                    time.sleep(5)
+                    self.driver.switch_to_window(self.driver.window_handles[1])
+                    if self.driver.current_url == \
+                        'chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/firstRun.html':
+                        self.driver.execute_script('window.close();')
+                        self.driver.switch_to_window(self.driver.window_handles[0])
+                except IndexError:
+                    pass
             if ipl:
                 self.get_espn_data()
             self.logger.info("Navigating to dream11 homepage...")
             self.driver.get(self.obj.get_xpath("Target_URL"))
+            # Closing Adblock tab
             self.logger.info("Entering username")
             self.obj.send_keys(self.driver, self.obj.get_xpath("Username_input"),
                                self.obj.get_xpath(
@@ -64,12 +77,12 @@ class Dream11(object):
                         try:
                             each_player.find_element_by_xpath(".//span[@class='vCapIco']")
                             vcap.add(player_name)
-                        except NoSuchElementException:
+                        except (NoSuchElementException, StaleElementReferenceException):
                             pass
                         try:
                             each_player.find_element_by_xpath(".//span[@class='capIco']")
                             cap.add(player_name)
-                        except NoSuchElementException:
+                        except (NoSuchElementException, StaleElementReferenceException):
                             pass
                         if player_name not in result_dict:
                             result_dict[player_name] = 1
@@ -129,6 +142,7 @@ class Dream11(object):
                                                                                   self.obj.get_xpath(
                                                                                       "Team2")))
             self.logger.info("Getting team names...")
+            # import ipdb;ipdb.set_trace()
             team_name1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
                                                                                   self.obj.get_xpath("Team1")+"/b"))
             team_name2 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
@@ -166,7 +180,7 @@ class Dream11(object):
                         for x in ele.split('/'):
                             self.espn_list.append(x.strip())
                         continue
-                    elif 'probable' in ele:
+                    if 'probable' in ele:
                         ele = ''.join(ele.split('(probable) '))
                     self.espn_list.append(ele.strip())
             self.logger.info("%s Players are %s" % (team_name1, self.espn_list))
@@ -217,4 +231,4 @@ class Dream11Exception(Exception):
 
 if __name__ == "__main__":
     obj = Dream11()
-    obj.get_data(ipl=False)
+    obj.get_data(ipl=True)
