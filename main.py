@@ -9,6 +9,8 @@ from utils.config import Config
 from utils.get_logger import Logger
 from utils.config import NoSuchElementException
 from utils.config import StaleElementReferenceException
+from copy import deepcopy
+from utils.database import Database
 
 
 class Dream11(object):
@@ -136,8 +138,16 @@ class Dream11(object):
 
     def get_espn_data(self):
         try:
+            database_obj = Database()
+            link = self.obj.get_xpath("Preview_link")
+            teams = database_obj.get_teams_from_db(link)
+            if teams:
+                import json
+                self.espn_list.append(json.loads(teams[0][0]))
+                self.espn_list.append(json.loads(teams[0][1]))
+                return
             self.logger.info("Opening espn news page...")
-            self.driver.get(self.obj.get_xpath("Preview_link"))
+            self.driver.get(link)
             team1 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
                                                                                   self.obj.get_xpath("Team1")))
             team2 = self.obj.get_text_from_element(self.obj.wait_for_element(self.driver,
@@ -192,6 +202,7 @@ class Dream11(object):
             self.logger.info("Formatting the text...")
             res = re.sub(pt, '', team2)
             self.logger.info("Adding team2 players to espn_list")
+            team1_players = deepcopy(self.espn_list)
             team2_players = []
             for ele in res.split(', '):
                 if ele:
@@ -212,6 +223,7 @@ class Dream11(object):
             self.logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
             self.file_logger.info("%s Players are %s" % (team_name2, team2_players))
             self.file_logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
+            insert_teams_into_db(team1_players, team2_players)
 
         except WebDriverException:
             self.logger.info("Exception Occurred... writing to the log file")
