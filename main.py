@@ -26,7 +26,7 @@ class Dream11(object):
             vcap = set()
             cap = set()
             self.logger.info("Initializing driver")
-            self.driver = self.obj.get_driver_instance("firefox")
+            self.driver = self.obj.get_driver_instance("phantom")
             self.logger.info("Initialized driver...")
             # Get team data from espn
             if ipl:
@@ -82,16 +82,18 @@ class Dream11(object):
                 for key, value in enumerate(temp.iteritems()):
                     self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
                     self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
+                self.logger.info("**** Captain ****")
                 for each_cap in cap:
                     x = result_dict[each_cap]
                     if x > 1:
                         self.logger.info("{0} is a Captain and put {1} times ".format(each_cap, x))
                         self.file_logger.info("{0} is a Captain and put {1} times ".format(each_cap, x))
+                self.logger.info("**** Vice-Captain ****")
                 for each_vcap in vcap:
                     x = result_dict[each_vcap]
                     if x > 2:
-                        self.logger.info("{0} is a Captain and put {1} times ".format(each_vcap, x))
-                        self.file_logger.info("{0} is a Captain and put {1} times ".format(each_vcap, x))
+                        self.logger.info("{0} is a Vice-Captain and put {1} times ".format(each_vcap, x))
+                        self.file_logger.info("{0} is a Vice-Captain and put {1} times ".format(each_vcap, x))
                 if ipl:
                 # import ipdb;ipdb.set_trace()
                     diff = set(self.espn_list) - set(result_dict.keys())
@@ -215,4 +217,4 @@ class Dream11Exception(Exception):
 
 if __name__ == "__main__":
     obj = Dream11()
-    obj.get_data(ipl=True)
+    obj.get_data(ipl=False)
