@@ -96,12 +96,14 @@ class Dream11(object):
                     self.logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
                     self.file_logger.info("{0} : {1} - {2}".format(key + 1, value[0], value[1]))
                 self.logger.info("**** Captain ****")
+                self.file_logger.info("**** Captain ****")
                 for each_cap in cap:
                     x = result_dict[each_cap]
                     if x > 1:
                         self.logger.info("{0} is a Captain and put {1} times ".format(each_cap, x))
                         self.file_logger.info("{0} is a Captain and put {1} times ".format(each_cap, x))
                 self.logger.info("**** Vice-Captain ****")
+                self.file_logger.info("**** Vice-Captain ****")
                 for each_vcap in vcap:
                     x = result_dict[each_vcap]
                     if x > 2:
@@ -202,7 +204,7 @@ class Dream11(object):
                             self.espn_list.append(x.strip())
                             team2_players.append(x.strip())
                         continue
-                    elif 'probable' in ele:
+                    if 'probable' in ele:
                         ele = ''.join(ele.split('(probable) '))
                     self.espn_list.append(ele.strip())
                     team2_players.append(ele)
