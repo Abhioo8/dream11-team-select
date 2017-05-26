@@ -1,0 +1,77 @@
+
+2017-05-26 19:25:31,555 : INFO : ********************************************************************************
+2017-05-26 19:25:41,765 : INFO : England: Players are [u'Jason Roy', u'Alex Hales', u'Joe Root', u'Eoin Morgan', u'Ben Stokes', u'Jos Buttler', u'Moeen Ali', u'Chris Woakes', u'Adil Rashid', u'Liam Plunkett', u'Mark Wood']
+2017-05-26 19:25:41,765 : INFO : Total England: Players are 11
+2017-05-26 19:25:41,766 : INFO : South Africa: Players are [u'Quinton de Kock', u'Hashim Amla', u'Faf du Plessis', u'AB de Villiers', u'JP Duminy', u'David Miller', u'Wayne Parnell', u'Chris Morris', u'Kagiso Rabada', u'Andile Phehlukwayo', u'Morne Morkel', u'Imran Tahir']
+2017-05-26 19:25:41,766 : INFO : Total South Africa: Players are 12
+2017-05-26 19:27:43,994 : INFO : 1 : AB de Villiers - 4
+2017-05-26 19:27:43,994 : INFO : 2 : Adil Rashid - 4
+2017-05-26 19:27:43,994 : INFO : 3 : Alex Hales - 2
+2017-05-26 19:27:43,994 : INFO : 4 : Andile Phehlukwayo - 1
+2017-05-26 19:27:43,995 : INFO : 5 : Ben Stokes - 1
+2017-05-26 19:27:43,995 : INFO : 6 : Chris Morris - 6
+2017-05-26 19:27:43,995 : INFO : 7 : Chris Woakes - 4
+2017-05-26 19:27:43,995 : INFO : 8 : Eoin Morgan - 4
+2017-05-26 19:27:43,995 : INFO : 9 : Faf du Plessis - 3
+2017-05-26 19:27:43,995 : INFO : 10 : Hashim Amla - 3
+2017-05-26 19:27:43,995 : INFO : 11 : Imran Tahir - 4
+2017-05-26 19:27:43,995 : INFO : 12 : Jason Roy - 1
+2017-05-26 19:27:43,995 : INFO : 13 : Jean-Paul Duminy - 3
+2017-05-26 19:27:43,995 : INFO : 14 : Joe Root - 4
+2017-05-26 19:27:43,996 : INFO : 15 : Jonny Bairstow - 1
+2017-05-26 19:27:43,996 : INFO : 16 : Jos Buttler - 3
+2017-05-26 19:27:43,996 : INFO : 17 : Kagiso Rabada - 6
+2017-05-26 19:27:43,996 : INFO : 18 : Liam Plunkett - 4
+2017-05-26 19:27:43,996 : INFO : 19 : Mark Wood - 1
+2017-05-26 19:27:43,996 : INFO : 20 : Moeen Ali - 4
+2017-05-26 19:27:43,996 : INFO : 21 : Quinton de Kock - 3
+2017-05-26 19:27:43,996 : INFO : **** Captain ****
+2017-05-26 19:27:43,996 : INFO : Alex Hales is a Captain and put 2 times 
+2017-05-26 19:27:43,997 : INFO : Faf du Plessis is a Captain and put 3 times 
+2017-05-26 19:27:43,997 : INFO : Quinton de Kock is a Captain and put 3 times 
+2017-05-26 19:27:43,997 : INFO : **** Vice-Captain ****
+2017-05-26 19:27:43,997 : INFO : Hashim Amla is a Vice-Captain and put 3 times 
+2017-05-26 19:27:43,997 : INFO : AB de Villiers is a Vice-Captain and put 4 times 
+2017-05-26 19:27:43,997 : INFO : Chris Woakes is a Vice-Captain and put 4 times 
+2017-05-26 19:27:43,997 : INFO : Moeen Ali is a Vice-Captain and put 4 times 
+2017-05-26 19:27:43,997 : INFO : Eoin Morgan is a Vice-Captain and put 4 times 
+2017-05-26 19:27:43,997 : INFO : Joe Root is a Vice-Captain and put 4 times 
+2017-05-26 19:27:43,998 : INFO : Players in ESPN List but not in Dream11 set([u'JP Duminy', u'David Miller', u'Wayne Parnell', u'Morne Morkel'])
+2017-05-26 19:27:43,998 : INFO : Players in Dream11 not in ESPN List set([u'Jean-Paul Duminy', u'Jonny Bairstow'])
+2017-05-26 19:32:55,235 : INFO : ********************************************************************************
+2017-05-26 19:34:53,435 : INFO : 1 : AB de Villiers - 4
+2017-05-26 19:34:53,435 : INFO : 2 : Adil Rashid - 4
+2017-05-26 19:34:53,435 : INFO : 3 : Alex Hales - 2
+2017-05-26 19:34:53,435 : INFO : 4 : Andile Phehlukwayo - 1
+2017-05-26 19:34:53,435 : INFO : 5 : Ben Stokes - 1
+2017-05-26 19:34:53,436 : INFO : 6 : Chris Morris - 6
+2017-05-26 19:34:53,436 : INFO : 7 : Chris Woakes - 4
+2017-05-26 19:34:53,436 : INFO : 8 : David Miller - 1
+2017-05-26 19:34:53,436 : INFO : 9 : Eoin Morgan - 4
+2017-05-26 19:34:53,436 : INFO : 10 : Faf du Plessis - 2
+2017-05-26 19:34:53,436 : INFO : 11 : Hashim Amla - 4
+2017-05-26 19:34:53,436 : INFO : 12 : Imran Tahir - 4
+2017-05-26 19:34:53,436 : INFO : 13 : Jason Roy - 1
+2017-05-26 19:34:53,436 : INFO : 14 : Jean-Paul Duminy - 2
+2017-05-26 19:34:53,436 : INFO : 15 : Joe Root - 4
+2017-05-26 19:34:53,436 : INFO : 16 : Jonny Bairstow - 1
+2017-05-26 19:34:53,437 : INFO : 17 : Jos Buttler - 3
+2017-05-26 19:34:53,437 : INFO : 18 : Kagiso Rabada - 4
+2017-05-26 19:34:53,437 : INFO : 19 : Liam Plunkett - 5
+2017-05-26 19:34:53,437 : INFO : 20 : Mark Wood - 1
+2017-05-26 19:34:53,437 : INFO : 21 : Moeen Ali - 4
+2017-05-26 19:34:53,437 : INFO : 22 : Morne Morkel - 1
+2017-05-26 19:34:53,437 : INFO : 23 : Quinton de Kock - 3
+2017-05-26 19:34:53,437 : INFO : **** Captain ****
+2017-05-26 19:34:53,437 : INFO : Alex Hales is a Captain and put 2 times 
+2017-05-26 19:34:53,437 : INFO : Faf du Plessis is a Captain and put 2 times 
+2017-05-26 19:34:53,437 : INFO : Quinton de Kock is a Captain and put 3 times 
+2017-05-26 19:34:53,438 : INFO : **** Vice-Captain ****
+2017-05-26 19:34:53,438 : INFO : Hashim Amla is a Vice-Captain and put 4 times 
+2017-05-26 19:34:53,438 : INFO : AB de Villiers is a Vice-Captain and put 4 times 
+2017-05-26 19:34:53,438 : INFO : Chris Woakes is a Vice-Captain and put 4 times 
+2017-05-26 19:34:53,438 : INFO : Moeen Ali is a Vice-Captain and put 4 times 
+2017-05-26 19:34:53,438 : INFO : Eoin Morgan is a Vice-Captain and put 4 times 
+2017-05-26 19:34:53,438 : INFO : Joe Root is a Vice-Captain and put 4 times 
+2017-05-26 19:34:53,438 : INFO : Players in ESPN List but not in Dream11 set([u'JP Duminy', u'Wayne Parnell'])
+2017-05-26 19:34:53,438 : INFO : Players in Dream11 not in ESPN List set([u'Jean-Paul Duminy', u'Jonny Bairstow'])
