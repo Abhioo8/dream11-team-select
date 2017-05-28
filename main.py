@@ -39,6 +39,7 @@ class Dream11(object):
                     self.driver.switch_to_window(self.driver.window_handles[1])
                     if self.driver.current_url == \
                         'chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/firstRun.html':
+                        # Closing Adblock tab
                         self.driver.execute_script('window.close();')
                         self.driver.switch_to_window(self.driver.window_handles[0])
                 except IndexError:
@@ -47,7 +48,6 @@ class Dream11(object):
                 self.get_espn_data()
             self.logger.info("Navigating to dream11 homepage...")
             self.driver.get(self.obj.get_xpath("Target_URL"))
-            # Closing Adblock tab
             self.logger.info("Entering username")
             self.obj.send_keys(self.driver, self.obj.get_xpath("Username_input"),
                                self.obj.get_xpath(
@@ -123,6 +123,7 @@ class Dream11(object):
                 self.file_logger.debug(traceback.format_exc())
             finally:
                 # Logout
+                self.logger.info("Logging out...")
                 self.obj.click_element(self.driver, self.obj.get_xpath("Team_section"))
                 self.obj.click_element(self.driver, self.obj.get_xpath("Logout_btn"))
 
