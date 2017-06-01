@@ -58,12 +58,10 @@ class Dream11(object):
             self.logger.info("Clicking on login")
             self.obj.click_element(self.driver, self.obj.get_xpath("Login_btn"))
             try:
-                self.logger.info("Sleeping for 10 seconds")
-                time.sleep(10)
                 # Get total teams
                 self.logger.info("Selecting match")
                 self.obj.click_element(self.driver, self.obj.get_xpath("Match_selector"))
-                time.sleep(5)
+                time.sleep(3)
                 self.logger.info("Getting total teams")
                 total_teams = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Total_teams"))
@@ -71,7 +69,7 @@ class Dream11(object):
                     self.logger.info("Clicking on teams")
                     self.obj.click_element(self.driver, self.obj.get_xpath("Team_select"))
                     each_team.click()
-                    time.sleep(5)
+                    time.sleep(3)
                     total_players = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                         "Total_players"))
                     for each_player in total_players:
@@ -172,7 +170,7 @@ class Dream11(object):
                     f.write(team2 + '\n')
                 # Since we can't rely upon espn cricnfo, it might have text formatting
                 # issues, writing to a txt file, verify it, then continue
-                import ipdb;
+                import ipdb
                 ipdb.set_trace()
                 with open('/tmp/dream11.txt', 'r') as f:
                     teams = f.readlines()
@@ -185,15 +183,17 @@ class Dream11(object):
                 if ele:
                     if '(wk)' in ele:
                         ele = "".join(ele.split('(wk)')).strip()
-                    elif '(capt)' in ele:
+                    if '(capt)' in ele:
                         ele = "".join(ele.split('(capt)')).strip()
-                    elif '/' in ele:
+                    if '/' in ele:
                         for x in ele.split('/'):
-                            self.espn_list.append(x.strip())
+                            self.espn_list.append(x.strip().strip('.').strip())
                         continue
                     if 'probable' in ele:
                         ele = ''.join(ele.split('(probable) '))
-                    self.espn_list.append(ele.strip())
+                    if 'possible' in ele:
+                        ele = ''.join(ele.split('(possible) '))
+                    self.espn_list.append(ele.strip().strip('.').strip())
             self.logger.info("%s Players are %s" % (team_name1, self.espn_list))
             self.logger.info("Total %s Players are %d" % (team_name1, len(self.espn_list)))
             self.file_logger.info("%s Players are %s" % (team_name1, self.espn_list))
@@ -207,17 +207,19 @@ class Dream11(object):
                 if ele:
                     if '(wk)' in ele:
                         ele = "".join(ele.split('(wk)')).strip()
-                    elif '(capt)' in ele:
+                    if '(capt)' in ele:
                         ele = "".join(ele.split('(capt)')).strip()
-                    elif '/' in ele:
+                    if '/' in ele:
                         for x in ele.split('/'):
-                            self.espn_list.append(x.strip())
-                            team2_players.append(x.strip())
+                            self.espn_list.append(x.strip().strip('.').strip())
+                            team2_players.append(x.strip().strip('.').strip())
                         continue
                     if 'probable' in ele:
                         ele = ''.join(ele.split('(probable) '))
-                    self.espn_list.append(ele.strip())
-                    team2_players.append(ele)
+                    if 'possible' in ele:
+                        ele = ''.join(ele.split('(possible) '))
+                    self.espn_list.append(ele.strip().strip('.').strip())
+                    team2_players.append(ele.strip().strip('.').strip())
             self.logger.info("%s Players are %s" % (team_name2, team2_players))
             self.logger.info("Total %s Players are %d" % (team_name2, len(team2_players)))
             self.file_logger.info("%s Players are %s" % (team_name2, team2_players))
