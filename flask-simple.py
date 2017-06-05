@@ -6,7 +6,6 @@ app = Flask(__name__)
 
 @app.route('/players/list', methods=['GET'])
 def index():
-    import ipdb;ipdb.set_trace()
     _json = main()
     return jsonify({'players':_json})
 
