@@ -11,7 +11,8 @@ def index():
 
 @app.route('/')
 def _main():
-    return render_template('index.html')
+    players_dict = main()
+    return render_template('index.html', players_dict=players_dict, total=0, teams=0)
 
 
 if __name__ == '__main__':

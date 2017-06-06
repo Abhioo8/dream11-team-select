@@ -11,7 +11,10 @@ def main(file_name="players.txt", sortby=1, use_df=False):
         players = f.readlines()
     for i,j in zip(range(0,len(players),2), range(1,len(players),2)):
         player_dict[players[i].strip('\n').strip()] = float(players[j].strip('\n').strip())
-    sorted_players = sorted(player_dict.items(), key=operator.itemgetter(sortby))
+    if sortby == 1:
+        sorted_players = sorted(player_dict.items(), key=operator.itemgetter(sortby), reverse=True)
+    else:
+        sorted_players = sorted(player_dict.items(), key=operator.itemgetter(sortby))
     ordered_players = OrderedDict(sorted_players)
     if use_df:
         df = pd.DataFrame(sorted_players)
