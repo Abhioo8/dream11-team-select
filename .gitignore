@@ -106,3 +106,4 @@ ENV/
 ### NotepadPP template
 # Notepad++ backups #
 *.bak
+mylogger.log

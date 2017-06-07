@@ -3,14 +3,11 @@ import operator
 import pandas as pd
 from tabulate import tabulate
 from collections import OrderedDict
-
 import time
 import traceback
 from base64 import b64decode
 from copy import deepcopy
-
 from selenium.common.exceptions import WebDriverException
-
 from utils.config import Config
 from utils.get_logger import Logger
 from utils.utils import save_to_csv
@@ -23,7 +20,7 @@ class Dream11(object):
         self.logger = Logger.get_console_logger()
         self.file_logger = Logger.get_file_logger()
 
-    def get_data(self, driver_name='firefox'):
+    def get_data(self, driver_name='firefox', filename='players.txt', sortby=1):
         try:
             self.file_logger.info(
                 "********************************************************************************")
@@ -47,32 +44,36 @@ class Dream11(object):
                 time.sleep(3)
                 self.logger.info("Clicking on Create Team")
                 self.obj.click_element(self.driver, self.obj.get_xpath("Create_team_btn"))
-            self.logger.info("Clicking on All Players tab")
-            self.obj.click_element(self.driver, self.obj.get_xpath("All_players_tab"))
-            total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
-                "All_players"))
-            for each_ele in total_elements:
-                self.logger.info("Clicking on info")
                 time.sleep(5)
-                self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
-                    "Info_link")).click()
-                self.logger.info("Getting Info")
-                player_name = self.obj.get_text_from_element(
-                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
-                        "Player_name_text")))
-                player_percentage = self.obj.get_text_from_element(
-                    self.obj.wait_for_element(self.driver, self.obj.get_xpath(
-                        "Player_percentage_text")))
-                with open('players.txt', 'w') as f:
-                    f.write(player_name + '\n')
-                    f.write(player_percentage + '\n')
+                self.logger.info("Clicking on All Players tab")
+                self.obj.click_element(self.driver, self.obj.get_xpath("All_players_tab"))
+                total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "All_players"))
+                for each_ele in total_elements:
+                    self.logger.info("Clicking on info")
+                    time.sleep(5)
+                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Info_link")).click()
+                    self.logger.info("Getting Info")
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_name_text")))
+                    player_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_percentage_text")))
+                    with open(filename, 'a') as f:
+                        f.write(player_name + '\n')
+                        f.write(player_percentage + '\n')
+                    self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
             except Exception:
                 self.logger.info("Exception Occurred... writing to the log file")
                 self.file_logger.debug(traceback.format_exc())
             finally:
                 # Logout
+                self.driver.get(self.obj.get_xpath("Target_URL"))
+                time.sleep(5)
                 self.logger.info("Logging out...")
-                self.obj.click_element(self.driver, self.obj.get_xpath("Team_section"))
+                self.obj.click_element(self.driver, self.obj.get_xpath("Team_dropdown"))
                 self.obj.click_element(self.driver, self.obj.get_xpath("Logout_btn"))
 
         except WebDriverException:
@@ -83,6 +84,12 @@ class Dream11(object):
                 self.driver.quit()
             else:
                 print("Driver not initialized")
+        ordered_players = sort_by(filename, sortby)
+        with open('players.txt', 'w') as f:
+            for player in ordered_players.iteritems():
+                f.write(str(player[0])+'\n')
+                f.write(str(player[1])+'\n')
+        return
 
 
 class Dream11Exception(Exception):
@@ -98,9 +105,9 @@ class Dream11Exception(Exception):
         return self.message
 
 
-def main(file_name="players.txt", sortby=1, use_df=False):
+def sort_by(filename, sortby):
     player_dict = dict()
-    with open(file_name) as f:
+    with open(filename) as f:
         players = f.readlines()
     for i,j in zip(range(0,len(players),2), range(1,len(players),2)):
         player_dict[players[i].strip('\n').strip()] = float(players[j].strip('\n').strip())
@@ -109,16 +116,19 @@ def main(file_name="players.txt", sortby=1, use_df=False):
     else:
         sorted_players = sorted(player_dict.items(), key=operator.itemgetter(sortby))
     ordered_players = OrderedDict(sorted_players)
+    return ordered_players
+
+
+def main(filename="players.txt", sortby=1, use_df=False):
+    ordered_players = sort_by(filename, sortby)
     if use_df:
-        df = pd.DataFrame(sorted_players)
+        df = pd.DataFrame(ordered_players)
         tabular_df = tabulate(df, headers='keys', tablefmt='psql')
         print(tabular_df)
     return ordered_players
 
 
 if __name__ == '__main__':
-    obj = Dream11()
-    obj.get_data()
     parser = argparse.ArgumentParser(description="An utility that reads\
                                     the given file having two team players\
                                     separated by commas and generate required\
@@ -132,19 +142,18 @@ if __name__ == '__main__':
     arg_group.add_argument("-d", "--usedf", required=False, help="This tells \
                            whether to use DataFrames or not")
     args = parser.parse_args()
-    file_name = 'players.txt'
-    sortby = args.sortby if args.sortby else 0
-    use_df = 0
+    filename = args.filename if args.filename else 'players.txt'
+    sortby = args.sortby if args.sortby else 1
+    use_df = args.usedf if args.usedf else 0
     if args.usedf:
-        use_df = args.usedf
         try:
             use_df = int(use_df)
         except ValueError:
             raise ValueError("-d argument should be an integer")
-    if args.filename:
-        file_name = args.filename
     try:
         sortby = int(sortby)
     except ValueError:
         raise ValueError("-s argument should be an integer")
-    main(sortby=sortby)
+    obj = Dream11()
+    obj.get_data()
+    main(filename=filename, sortby=sortby, use_df=use_df)

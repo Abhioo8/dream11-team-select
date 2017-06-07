@@ -47,6 +47,7 @@ class Database:
             logger.info("Exception Occurred while inserting into database... writing to the log file")
             file_logger.debug(traceback.format_exc())
 
+
     def __del__(self):
         try:
             if self.cursor:
