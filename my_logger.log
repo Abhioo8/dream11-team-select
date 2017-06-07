@@ -1,1 +1,21 @@
 s
+2017-06-07 20:20:36,345 : INFO : ********************************************************************************
+2017-06-07 20:21:18,738 : DEBUG : Traceback (most recent call last):
+  File "get_player_odds.py", line 67, in get_data
+    self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+  File "/home/lokesh/dream11-team-select/utils/config.py", line 92, in click_element
+    driver.find_element_by_xpath(xpath).click()
+  File "/home/lokesh/.virtualenvs/python2.7/local/lib/python2.7/site-packages/selenium/webdriver/remote/webelement.py", line 77, in click
+    self._execute(Command.CLICK_ELEMENT)
+  File "/home/lokesh/.virtualenvs/python2.7/local/lib/python2.7/site-packages/selenium/webdriver/remote/webelement.py", line 493, in _execute
+    return self._parent.execute(command, params)
+  File "/home/lokesh/.virtualenvs/python2.7/local/lib/python2.7/site-packages/selenium/webdriver/remote/webdriver.py", line 256, in execute
+    self.error_handler.check_response(response)
+  File "/home/lokesh/.virtualenvs/python2.7/local/lib/python2.7/site-packages/selenium/webdriver/remote/errorhandler.py", line 194, in check_response
+    raise exception_class(message, screen, stacktrace)
+ElementNotInteractableException: Message: 
+
+
+2017-06-07 20:58:52,924 : INFO : ********************************************************************************
+2017-06-07 21:05:07,622 : INFO : ********************************************************************************
+2017-06-07 21:12:33,193 : INFO : ********************************************************************************

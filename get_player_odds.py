@@ -20,8 +20,10 @@ class Dream11(object):
         self.logger = Logger.get_console_logger()
         self.file_logger = Logger.get_file_logger()
 
-    def get_data(self, driver_name='firefox', filename='players.txt', sortby=1):
+    def get_data(self, driver_name='phantom', filename='players.txt', sortby=1):
         try:
+            with open(filename, 'w') as f:
+                f.truncate()
             self.file_logger.info(
                 "********************************************************************************")
             self.driver = self.obj.get_driver_instance(driver_name)
@@ -49,11 +51,13 @@ class Dream11(object):
                 self.obj.click_element(self.driver, self.obj.get_xpath("All_players_tab"))
                 total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "All_players"))
+                import ipdb;ipdb.set_trace()
                 for each_ele in total_elements:
                     self.logger.info("Clicking on info")
-                    time.sleep(5)
+                    time.sleep(3)
                     self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                         "Info_link")).click()
+                    time.sleep(3)
                     self.logger.info("Getting Info")
                     player_name = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
@@ -62,8 +66,8 @@ class Dream11(object):
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
                     with open(filename, 'a') as f:
-                        f.write(player_name + '\n')
-                        f.write(player_percentage + '\n')
+                        f.write(str(player_name) + '\n')
+                        f.write(str(player_percentage) + '\n')
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
             except Exception:
                 self.logger.info("Exception Occurred... writing to the log file")
@@ -156,4 +160,4 @@ if __name__ == '__main__':
         raise ValueError("-s argument should be an integer")
     obj = Dream11()
     obj.get_data()
-    main(filename=filename, sortby=sortby, use_df=use_df)
+    # main(filename, sortby, use_df)

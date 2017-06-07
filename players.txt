@@ -1,44 +1,60 @@
-Quinton de Kock
-79.73
-Sarfraz Ahmed
-20.28
-Hashim Amla
-91.42
-Faf du Plessis
-76.93
-Azhar Ali
-72.18
-David Miller
-24.7
-AB de Villiers
-72.97
-Babar Azam
-49.52
-Fakhar Zaman
-7.31
-Chris Morris
-71.07
-Jean-Paul Duminy
-38.15
-Mohammad Hafeez
-51.29
-Shoaib Malik
-51.02
-Imad Wasim
-6.78
-Imran Tahir
-74.08
-Shadab Khan
-40.86
-Kagiso Rabada
-70.63
-Morne Morkel
-24.8
-Wayne Parnell
-20.01
-Hasan Ali
-36.57
-Mohammad Amir
-52.55
-Junaid Khan
-15.39
+Virat Kohli
+94.73
+Rohit Sharma
+85.94
+Hardik Pandya
+77.51
+Bhuvneshwar Kumar
+72.94
+Shikhar Dhawan
+65.42
+Ravindra Jadeja
+63.76
+Yuvraj Singh
+57.72
+Umesh Yadav
+56.47
+Niroshan Dickwella
+53.62
+Lasith Malinga
+52.85
+Dinesh Chandimal
+46.36
+Nuwan Pradeep
+45.86
+MS Dhoni
+45.68
+Upul Tharanga
+44.98
+Jasprit Bumrah
+36.59
+Kusal Mendis
+30.87
+Angelo Mathews
+27.2
+Kusal Perera
+27.19
+Seekkuge Prasanna
+24.94
+Suranga Lakmal
+24.92
+Asela Gunaratne
+23.05
+Nuwan Kulasekara
+12.28
+Thisara Perera
+9.47
+Kedar Jadhav
+5.37
+Ravichandran Ashwin
+4.08
+Chamara Kapugedera
+2.87
+Lakshan Sandakan
+2.55
+Ajinkya Rahane
+2.49
+Mohammed Shami
+1.67
+Dinesh Karthik
+0.7
