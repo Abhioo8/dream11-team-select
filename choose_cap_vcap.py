@@ -8,13 +8,13 @@ def main():
                                     separated by commas and generate required\
                                     number of pairs of cap and vice-cap")
     arg_group = parser.add_argument_group("Required Arguments")
-    arg_group.add_argument("-f", "--filename", required=True, help="A File name\
+    arg_group.add_argument("-f", "--filename", required=False, help="A File name\
                             which consists of captains and vice-captains\
                             from two team players respectively")
     arg_group.add_argument("-n", "--number", required=True, help="Total number\
                             of cap and vice-cap pairs")
     args = parser.parse_args()
-    file_name = args.filename
+    file_name = args.filename if args.filename else 'cap_vcap.txt'
     try:
         pairs = int(args.number)
     except ValueError:
