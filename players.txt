@@ -1,52 +1,44 @@
-Walton
-94.68
-Shafiq
-4.8
-Lewis
-92.19
-Simmons
-80.78
-Najibullah
-44.93
-Jason
-18.05
-Stanikzai
-77.17
-Ghani
-12.36
-Noor Ali Zadran
-19.74
-Pollard
-10.48
-Brathwaite
-84.61
-Samuels
-70.45
-Naib
-45.13
-Nabi
-57.15
-Shenwari
-7.3
-Powell
-2.44
-Kesrick Williams
-69.09
-Narine
-88.38
-Karim Janat
-38.35
-Rashid Khan
-89.02
-Jerome Taylor
-20.61
-Samuel Badree 
-37.23
-Shapoor Zadran
-9.81
-Amir Hamza
-8.39
-Dawlat Zadran
-7.14
-Ronsford Beaton
-5.07
+Quinton de Kock
+79.73
+Sarfraz Ahmed
+20.28
+Hashim Amla
+91.42
+Faf du Plessis
+76.93
+Azhar Ali
+72.18
+David Miller
+24.7
+AB de Villiers
+72.97
+Babar Azam
+49.52
+Fakhar Zaman
+7.31
+Chris Morris
+71.07
+Jean-Paul Duminy
+38.15
+Mohammad Hafeez
+51.29
+Shoaib Malik
+51.02
+Imad Wasim
+6.78
+Imran Tahir
+74.08
+Shadab Khan
+40.86
+Kagiso Rabada
+70.63
+Morne Morkel
+24.8
+Wayne Parnell
+20.01
+Hasan Ali
+36.57
+Mohammad Amir
+52.55
+Junaid Khan
+15.39

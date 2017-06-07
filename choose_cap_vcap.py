@@ -30,7 +30,7 @@ def main():
     if pairs > (len(cap) or len(vcap)):
         print("cap or vcap list should be less than number of pairs required")
         return
-    all_possible_combinations = [(each_cap, each_vcap) for each_cap in cap for each_vcap in vcap]
+    # all_possible_combinations = [(each_cap, each_vcap) for each_cap in cap for each_vcap in vcap]
     # res = []
     # for each_num in range(pairs):
         # x = sample(all_possible_combinations, 1).pop()
@@ -42,7 +42,7 @@ def main():
         #all_possible_combinations = list(set(all_possible_combinations) - temp)
         #res.append(x)
     # res = sample(list(zip(cap, vcap)), pairs)
-    res = sample(all_possible_combinations, pairs)
+    res = sample(zip(cap, vcap), pairs)
     print("******** possible cap and vice-cap ********\n")
     print("cap\tvice-cap")
     for each_res in res:
