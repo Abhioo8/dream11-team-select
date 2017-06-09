@@ -14,7 +14,7 @@ def main():
     arg_group.add_argument("-n", "--number", required=True, help="Total number\
                             of cap and vice-cap pairs")
     args = parser.parse_args()
-    file_name = args.filename if args.filename else 'cap_vcap.txt'
+    file_name = args.filename if args.filename else 'choose_cap_vcap.txt'
     try:
         pairs = int(args.number)
     except ValueError:
