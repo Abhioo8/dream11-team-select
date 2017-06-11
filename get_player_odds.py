@@ -18,7 +18,7 @@ class Dream11(object):
         self.logger = Logger.get_console_logger()
         self.file_logger = Logger.get_file_logger()
 
-    def get_data(self, driver_name='phantom', filename='players.txt', sortby=1):
+    def get_data(self, driver_name='phantom', filename='players.properties', sortby=1):
         try:
             with open(filename, 'w') as f:
                 f.truncate()
@@ -49,9 +49,9 @@ class Dream11(object):
                 self.logger.info("Clicking on Create Team")
                 self.obj.click_element(self.driver, self.obj.get_xpath("Create_team_btn"))
                 time.sleep(5)
-                self.logger.info("Clicking on All Players tab")
-                self.obj.click_element(self.driver, self.obj.get_xpath("All_players_tab"))
-                # Getting Bats info                
+                # Getting Bats info
+                self.logger.info("Clicking on BAT tab")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Bat_tab_link"))
                 self.logger.info("Getting Batsmen info...")
                 total_bats = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_batsmens"))
@@ -68,9 +68,11 @@ class Dream11(object):
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
-                    players_bat[player_name] = player_percentage
+                    players_bat[player_name] = float(player_percentage)
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
                 # Getting Bowls info
+                self.logger.info("Clicking on BOWL tab")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Bowl_tab_link"))
                 self.logger.info("Getting Bowlers info...")                
                 total_bowls = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_bowlers"))
@@ -87,9 +89,11 @@ class Dream11(object):
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
-                    players_bowl[player_name] = player_percentage
+                    players_bowl[player_name] = float(player_percentage)
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
-                                # Getting Bowls info
+                # Getting Allrounders info
+                self.logger.info("Clicking on AR tab")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Ar_tab_link"))
                 self.logger.info("Getting AllRounders info...")                
                 total_ars = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_allrounders"))
@@ -106,9 +110,11 @@ class Dream11(object):
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
-                    players_ar[player_name] = player_percentage
+                    players_ar[player_name] = float(player_percentage)
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
                 # Getting Wicket-Keepers info
+                self.logger.info("Clicking on WK tab")
+                self.obj.click_element(self.driver, self.obj.get_xpath("Wk_tab_link"))
                 self.logger.info("Getting Wicket-Keepers info...")                
                 total_wks = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_wicketkeepers"))
@@ -125,14 +131,8 @@ class Dream11(object):
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
-                    players_wk[player_name] = player_percentage
+                    players_wk[player_name] = float(player_percentage)
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
-                from tabulate import tabulate
-                print(tabulate(OrderedDict(players_bat), tablefmt='psql', headers='headers'))
-                print(tabulate(OrderedDict(players_wk), tablefmt='psql', headers='headers'))
-                print(tabulate(OrderedDict(players_bowl), tablefmt='psql', headers='headers'))
-                print(tabulate(OrderedDict(players_ar), tablefmt='psql', headers='headers'))
-
             except Exception:
                 self.logger.info("Exception Occurred... writing to the log file")
                 self.file_logger.debug(traceback.format_exc())
@@ -187,7 +187,7 @@ def sort_by(filename, sortby):
     return ordered_players
 
 
-def main(filename="players.txt", sortby=1, use_df=False):
+def main(filename="players.properties", sortby=1, use_df=False):
     ordered_players = sort_by(filename, sortby)
     if use_df:
         import pandas as pd
@@ -204,15 +204,11 @@ if __name__ == '__main__':
                                     separated by commas and generate required\
                                     number of pairs of cap and vice-cap")
     arg_group = parser.add_argument_group("Required Arguments")
-    arg_group.add_argument("-f", "--filename", required=False, help="A File name\
-                            which consists of captains and vice-captains\
-                            from two team players respectively")
     arg_group.add_argument("-s", "--sortby", required=False, help="An argument\
                             which tells to sort by player name or odds?")
     arg_group.add_argument("-d", "--usedf", required=False, help="This tells \
                            whether to use DataFrames or not")
     args = parser.parse_args()
-    filename = args.filename if args.filename else 'players.txt'
     sortby = args.sortby if args.sortby else 1
     use_df = args.usedf if args.usedf else 0
     if args.usedf:
