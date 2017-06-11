@@ -1,7 +1,5 @@
 import argparse
 import operator
-import pandas as pd
-from tabulate import tabulate
 from collections import OrderedDict
 import time
 import traceback
@@ -24,6 +22,10 @@ class Dream11(object):
         try:
             with open(filename, 'w') as f:
                 f.truncate()
+            players_bat = dict()
+            players_wk = dict()
+            players_bowl = dict()
+            players_ar = dict()
             self.file_logger.info(
                 "********************************************************************************")
             self.driver = self.obj.get_driver_instance(driver_name)
@@ -49,26 +51,88 @@ class Dream11(object):
                 time.sleep(5)
                 self.logger.info("Clicking on All Players tab")
                 self.obj.click_element(self.driver, self.obj.get_xpath("All_players_tab"))
-                total_elements = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
-                    "All_players"))
-                import ipdb;ipdb.set_trace()
-                for each_ele in total_elements:
+                # Getting Bats info                
+                self.logger.info("Getting Batsmen info...")
+                total_bats = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Players_batsmens"))
+                for each_ele in total_bats:
                     self.logger.info("Clicking on info")
                     time.sleep(3)
                     self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                         "Info_link")).click()
-                    time.sleep(3)
                     self.logger.info("Getting Info")
+                    time.sleep(3)
                     player_name = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_name_text")))
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
-                    with open(filename, 'a') as f:
-                        f.write(str(player_name) + '\n')
-                        f.write(str(player_percentage) + '\n')
+                    players_bat[player_name] = player_percentage
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+                # Getting Bowls info
+                self.logger.info("Getting Bowlers info...")                
+                total_bowls = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Players_bowlers"))
+                for each_ele in total_bowls:
+                    self.logger.info("Clicking on info")
+                    time.sleep(3)
+                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Info_link")).click()
+                    self.logger.info("Getting Info")
+                    time.sleep(3)
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_name_text")))
+                    player_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_percentage_text")))
+                    players_bowl[player_name] = player_percentage
+                    self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+                                # Getting Bowls info
+                self.logger.info("Getting AllRounders info...")                
+                total_ars = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Players_allrounders"))
+                for each_ele in total_ars:
+                    self.logger.info("Clicking on info")
+                    time.sleep(3)
+                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Info_link")).click()
+                    self.logger.info("Getting Info")
+                    time.sleep(3)
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_name_text")))
+                    player_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_percentage_text")))
+                    players_ar[player_name] = player_percentage
+                    self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+                # Getting Wicket-Keepers info
+                self.logger.info("Getting Wicket-Keepers info...")                
+                total_wks = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
+                    "Players_wicketkeepers"))
+                for each_ele in total_wks:
+                    self.logger.info("Clicking on info")
+                    time.sleep(3)
+                    self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Info_link")).click()
+                    self.logger.info("Getting Info")
+                    time.sleep(3)
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_name_text")))
+                    player_percentage = self.obj.get_text_from_element(
+                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
+                            "Player_percentage_text")))
+                    players_wk[player_name] = player_percentage
+                    self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+                from tabulate import tabulate
+                print(tabulate(OrderedDict(players_bat), tablefmt='psql', headers='headers'))
+                print(tabulate(OrderedDict(players_wk), tablefmt='psql', headers='headers'))
+                print(tabulate(OrderedDict(players_bowl), tablefmt='psql', headers='headers'))
+                print(tabulate(OrderedDict(players_ar), tablefmt='psql', headers='headers'))
+
             except Exception:
                 self.logger.info("Exception Occurred... writing to the log file")
                 self.file_logger.debug(traceback.format_exc())
@@ -126,6 +190,8 @@ def sort_by(filename, sortby):
 def main(filename="players.txt", sortby=1, use_df=False):
     ordered_players = sort_by(filename, sortby)
     if use_df:
+        import pandas as pd
+        from tabulate import tabulate
         df = pd.DataFrame(ordered_players)
         tabular_df = tabulate(df, headers='keys', tablefmt='psql')
         print(tabular_df)
