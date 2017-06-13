@@ -21,7 +21,26 @@
                     {{ teams }} / 11
                 </div>
                 <div class="btn-group btn-group-vertical" data-toggle="buttons">
-                    {% for key,value in players_dict.iteritems() %}
+                    <div class="players-info">WK</div>
+                    {% for key,value in players_wk_dict.iteritems() %}
+                    <label class="btn">
+                        <input type="checkbox" name='{{ key }}' value="{{ value }}"><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i> <span> {{ key }} ( {{ value }} )</span>
+                    </label>
+                    {% endfor %}
+                    <div class="players-info">BAT</div>
+                    {% for key,value in players_bat_dict.iteritems() %}
+                    <label class="btn">
+                        <input type="checkbox" name='{{ key }}' value="{{ value }}"><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i> <span> {{ key }} ( {{ value }} )</span>
+                    </label>
+                    {% endfor %}
+                    <div class="players-info">AR</div>
+                    {% for key,value in players_ar_dict.iteritems() %}
+                    <label class="btn">
+                        <input type="checkbox" name='{{ key }}' value="{{ value }}"><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i> <span> {{ key }} ( {{ value }} )</span>
+                    </label>
+                    {% endfor %}
+                    <div class="players-info">BOWL</div>
+                    {% for key,value in players_bowl_dict.iteritems() %}
                     <label class="btn">
                         <input type="checkbox" name='{{ key }}' value="{{ value }}"><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i> <span> {{ key }} ( {{ value }} )</span>
                     </label>
@@ -67,6 +86,11 @@
     });
     </script>
     <style type="text/css">
+    .players-info {
+        font-size: 16px;
+        color: lightblue;
+    }
+    
     #clear-all {
         width: auto;
     }

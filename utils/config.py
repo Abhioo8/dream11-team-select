@@ -3,7 +3,6 @@ import os
 import time
 from ConfigParser import ConfigParser
 from StringIO import StringIO
-
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, \
     ElementNotVisibleException
@@ -64,6 +63,7 @@ class Config(object):
             dcap = dict(DesiredCapabilities.PHANTOMJS)
             dcap["phantomjs.page.settings.userAgent"] = user_agent
             driver = webdriver.PhantomJS(desired_capabilities=dcap)
+            driver.set_window_size(1124, 850)
             return driver
 
         elif "chrome" in driver:
@@ -71,6 +71,16 @@ class Config(object):
             options.add_argument("--user-agent={0}".format(user_agent))
             options.add_extension("utils/ad_block_1.13.2.crx")
             driver = webdriver.Chrome(chrome_options=options)
+            try:
+                time.sleep(5)
+                driver.switch_to_window(self.driver.window_handles[1])
+                if driver.current_url == \
+                    'chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/firstRun.html':
+                    # Closing Adblock tab
+                    driver.execute_script('window.close();')
+                    driver.switch_to_window(self.driver.window_handles[0])
+            except IndexError:
+                pass
             return driver
 
         # ################ Firefox #################################
@@ -278,4 +288,4 @@ class Config(object):
         text = webelemet.text
         if not text:
             text = webelemet.get_attribute('innerHTML')
-        return text
+        return text.strip().strip('\n').strip()

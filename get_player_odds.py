@@ -9,6 +9,7 @@ from selenium.common.exceptions import WebDriverException
 from utils.config import Config
 from utils.get_logger import Logger
 from utils.utils import save_to_csv
+from utils.config import ConfigParser
 
 
 class Dream11(object):
@@ -18,7 +19,7 @@ class Dream11(object):
         self.logger = Logger.get_console_logger()
         self.file_logger = Logger.get_file_logger()
 
-    def get_data(self, driver_name='phantom', filename='players.properties', sortby=1):
+    def get_data(self, driver_name='phantom', filename='players.txt', sortby=1):
         try:
             with open(filename, 'w') as f:
                 f.truncate()
@@ -29,6 +30,17 @@ class Dream11(object):
             self.file_logger.info(
                 "********************************************************************************")
             self.driver = self.obj.get_driver_instance(driver_name)
+            if driver_name == 'chrome':
+                try:
+                    time.sleep(5)
+                    self.driver.switch_to_window(self.driver.window_handles[1])
+                    if self.driver.current_url == \
+                        'chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/firstRun.html':
+                        # Closing Adblock tab
+                        self.driver.execute_script('window.close();')
+                        self.driver.switch_to_window(self.driver.window_handles[0])
+                except IndexError:
+                    pass
             self.logger.info("Initialized driver...")
             self.logger.info("Navigating to dream11 homepage...")
             self.driver.get(self.obj.get_xpath("Target_URL"))
@@ -56,15 +68,15 @@ class Dream11(object):
                 total_bats = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_batsmens"))
                 for each_ele in total_bats:
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Player_name_text")))
                     self.logger.info("Clicking on info")
                     time.sleep(3)
                     self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                         "Info_link")).click()
                     self.logger.info("Getting Info")
                     time.sleep(3)
-                    player_name = self.obj.get_text_from_element(
-                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
-                            "Player_name_text")))
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
@@ -73,19 +85,19 @@ class Dream11(object):
                 # Getting Bowls info
                 self.logger.info("Clicking on BOWL tab")
                 self.obj.click_element(self.driver, self.obj.get_xpath("Bowl_tab_link"))
-                self.logger.info("Getting Bowlers info...")                
+                self.logger.info("Getting Bowlers info...")
                 total_bowls = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_bowlers"))
                 for each_ele in total_bowls:
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Player_name_text")))
                     self.logger.info("Clicking on info")
                     time.sleep(3)
                     self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                         "Info_link")).click()
                     self.logger.info("Getting Info")
                     time.sleep(3)
-                    player_name = self.obj.get_text_from_element(
-                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
-                            "Player_name_text")))
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
@@ -98,15 +110,15 @@ class Dream11(object):
                 total_ars = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_allrounders"))
                 for each_ele in total_ars:
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Player_name_text")))
                     self.logger.info("Clicking on info")
                     time.sleep(3)
                     self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                         "Info_link")).click()
                     self.logger.info("Getting Info")
                     time.sleep(3)
-                    player_name = self.obj.get_text_from_element(
-                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
-                            "Player_name_text")))
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
@@ -119,20 +131,29 @@ class Dream11(object):
                 total_wks = self.obj.wait_for_elements(self.driver, self.obj.get_xpath(
                     "Players_wicketkeepers"))
                 for each_ele in total_wks:
+                    player_name = self.obj.get_text_from_element(
+                        self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
+                        "Player_name_text")))
                     self.logger.info("Clicking on info")
                     time.sleep(3)
                     self.obj.wait_for_element_inside_webelement(each_ele, self.obj.get_xpath(
                         "Info_link")).click()
                     self.logger.info("Getting Info")
                     time.sleep(3)
-                    player_name = self.obj.get_text_from_element(
-                        self.obj.wait_for_element(self.driver, self.obj.get_xpath(
-                            "Player_name_text")))
                     player_percentage = self.obj.get_text_from_element(
                         self.obj.wait_for_element(self.driver, self.obj.get_xpath(
                             "Player_percentage_text")))
                     players_wk[player_name] = float(player_percentage)
                     self.obj.click_element(self.driver, self.obj.get_xpath("Popup_close"))
+                sorted_bat = sorted(players_bat.items(), key=operator.itemgetter(1), reverse=True)
+                self.write_to_players('BAT', OrderedDict(sorted_bat))
+                sorted_wk = sorted(players_wk.items(), key=operator.itemgetter(1), reverse=True)
+                self.write_to_players('WK', OrderedDict(sorted_wk))
+                sorted_bowl = sorted(players_bowl.items(), key=operator.itemgetter(1), reverse=True)
+                self.write_to_players('BOWL', OrderedDict(sorted_bowl))
+                sorted_ar = sorted(players_ar.items(), key=operator.itemgetter(1), reverse=True)
+                self.write_to_players('AR', OrderedDict(sorted_ar))
+
             except Exception:
                 self.logger.info("Exception Occurred... writing to the log file")
                 self.file_logger.debug(traceback.format_exc())
@@ -152,12 +173,23 @@ class Dream11(object):
                 self.driver.quit()
             else:
                 print("Driver not initialized")
-        ordered_players = sort_by(filename, sortby)
-        with open('players.txt', 'w') as f:
-            for player in ordered_players.iteritems():
-                f.write(str(player[0])+'\n')
-                f.write(str(player[1])+'\n')
-        return
+
+    @staticmethod
+    def write_to_players(section_name, data):
+        """
+        This function takes section_name and data and
+        write to the players.txt file.
+        @param: section_name: str: section name to be written
+        @param: data: OrderedDict: players data to be written
+        """
+        fp = open('players.txt', 'a')
+        config = ConfigParser()
+        config.optionxform = str
+        config.add_section(section_name)
+        for key,value in data.iteritems():
+            config.set(section_name, key, str(value))
+        config.write(fp)
+        fp.close()
 
 
 class Dream11Exception(Exception):
@@ -173,29 +205,23 @@ class Dream11Exception(Exception):
         return self.message
 
 
-def sort_by(filename, sortby):
+def construct_orderd_dict_from_players(section_name):
+    res = list()
+    config = ConfigParser()
+    config.read('players.txt')
+    options = config.options(section_name)
+    for option in options:
+        res.append((option, config.get(section_name, option)))
+    return OrderedDict(res)
+
+
+def read_from_players():
     player_dict = dict()
-    with open(filename) as f:
-        players = f.readlines()
-    for i,j in zip(range(0,len(players),2), range(1,len(players),2)):
-        player_dict[players[i].strip('\n').strip()] = float(players[j].strip('\n').strip())
-    if sortby == 1:
-        sorted_players = sorted(player_dict.items(), key=operator.itemgetter(sortby), reverse=True)
-    else:
-        sorted_players = sorted(player_dict.items(), key=operator.itemgetter(sortby))
-    ordered_players = OrderedDict(sorted_players)
-    return ordered_players
-
-
-def main(filename="players.properties", sortby=1, use_df=False):
-    ordered_players = sort_by(filename, sortby)
-    if use_df:
-        import pandas as pd
-        from tabulate import tabulate
-        df = pd.DataFrame(ordered_players)
-        tabular_df = tabulate(df, headers='keys', tablefmt='psql')
-        print(tabular_df)
-    return ordered_players
+    player_dict['BAT'] = construct_orderd_dict_from_players('BAT')
+    player_dict['WK'] = construct_orderd_dict_from_players('WK')
+    player_dict['BOWL'] = construct_orderd_dict_from_players('BOWL')
+    player_dict['AR'] = construct_orderd_dict_from_players('AR')
+    return player_dict
 
 
 if __name__ == '__main__':
@@ -222,4 +248,3 @@ if __name__ == '__main__':
         raise ValueError("-s argument should be an integer")
     obj = Dream11()
     obj.get_data()
-    # main(filename, sortby, use_df)

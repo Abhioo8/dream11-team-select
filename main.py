@@ -21,7 +21,7 @@ class Dream11(object):
         self.file_logger = Logger.get_file_logger()
         self.espn_list = list()
 
-    def get_data(self, ipl=True):
+    def get_data(self, ipl=True, driver_name = 'phantom'):
         try:
             self.file_logger.info(
                 "********************************************************************************")
@@ -29,21 +29,9 @@ class Dream11(object):
             vcap = set()
             cap = set()
             self.logger.info("Initializing driver")
-            driver_name = 'phantom'
             self.driver = self.obj.get_driver_instance(driver_name)
             self.logger.info("Initialized driver...")
             # Get team data from espn
-            if driver_name == 'chrome':
-                try:
-                    time.sleep(5)
-                    self.driver.switch_to_window(self.driver.window_handles[1])
-                    if self.driver.current_url == \
-                        'chrome-extension://cfhdojbkjhnklbpkdaibdccddilifddb/firstRun.html':
-                        # Closing Adblock tab
-                        self.driver.execute_script('window.close();')
-                        self.driver.switch_to_window(self.driver.window_handles[0])
-                except IndexError:
-                    pass
             if ipl:
                 self.get_espn_data()
             self.logger.info("Navigating to dream11 homepage...")
