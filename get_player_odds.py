@@ -11,6 +11,9 @@ from utils.get_logger import Logger
 from utils.utils import save_to_csv
 from utils.config import ConfigParser
 
+config = ConfigParser()
+config.optionxform = str
+
 
 class Dream11(object):
     def __init__(self):
@@ -183,8 +186,6 @@ class Dream11(object):
         @param: data: OrderedDict: players data to be written
         """
         fp = open('players.txt', 'a')
-        config = ConfigParser()
-        config.optionxform = str
         config.add_section(section_name)
         for key,value in data.iteritems():
             config.set(section_name, key, str(value))
@@ -207,7 +208,6 @@ class Dream11Exception(Exception):
 
 def construct_orderd_dict_from_players(section_name):
     res = list()
-    config = ConfigParser()
     config.read('players.txt')
     options = config.options(section_name)
     for option in options:
