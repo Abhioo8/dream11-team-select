@@ -1,6 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Mine template
-*.log
+ghostdriver.log
+geckodriver.log
+demo_cache.sqlite
 source.txt
 *.pkl
 *.pyc
@@ -104,3 +106,6 @@ ENV/
 ### NotepadPP template
 # Notepad++ backups #
 *.bak
+my_logger.log
+players.txt
+choose_cap_vcap.txt
